@@ -10,6 +10,7 @@ const progress = $('#progress')
 const nextBtn = $('.btn-next')
 const prevBtn = $('.btn-prev')
 const randomBtn = $('.btn-random')
+const repeatBtn = $('.btn-repeat')
 
 const playBtn = $('.btn-toggle-play')
 
@@ -17,6 +18,7 @@ const app = {
     currentIndex: 0,
     isPlaying: false,
     isRandom: false,
+    isRepeat: false,
     // Songs list
     songs: [
         {
@@ -82,9 +84,9 @@ const app = {
     ],
     // Render playlist
     render: function () {
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song, index) => {
             return `
-                <div class="song">
+                <div class="song ${index === this.currentIndex ? 'active' : ''}">
                     <div class="thumb" style="background-image: url('${song.image}')">
                     </div>
                     <div class="body">
@@ -179,6 +181,8 @@ const app = {
                 _this.nextSong()
             }
             audio.play()
+            _this.render()
+            _this.scrollToActiveSong()
         }
 
         // When press prev song
@@ -189,6 +193,8 @@ const app = {
                 _this.prevSong()
             }
             audio.play()
+            _this.render()
+            _this.scrollToActiveSong()
         }
 
         // Random btn
@@ -197,12 +203,38 @@ const app = {
             randomBtn.classList.toggle('active', _this.isRandom)
             // toggle 2nd param -> bool, if true => add, else remove
         }
+
+        // When audio ended
+        audio.onended = function() {
+            if (_this.isRepeat) {
+                audio.play()
+            } else {
+                // same as clicked manually
+                nextBtn.click()
+            }
+        }
+
+        // Repeat btn
+        repeatBtn.onclick = function() {
+            _this.isRepeat = !_this.isRepeat
+            repeatBtn.classList.toggle('active', _this.isRepeat)
+        }
     },
 
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`
         audio.src = this.currentSong.path
+    },
+
+    scrollToActiveSong: function() {
+        setTimeout(() => {
+            $('.song.active').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+
+            })
+        }, 200)
     },
 
     nextSong: function() {
@@ -226,7 +258,7 @@ const app = {
         do {
             randomIndex = Math.floor(Math.random() * this.songs.length)
         } while (this.currentIndex === randomIndex)
-        
+
         this.currentIndex = randomIndex
         this.loadCurrentSong()
     },
