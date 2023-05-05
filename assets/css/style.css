@@ -44,6 +44,7 @@
     width: 100%;
     max-width: 480px;
     border-bottom: 1px solid #ebebeb;
+    z-index: 1;
   }
   
   /* HEADER */
@@ -143,6 +144,12 @@
     padding: 8px 16px;
     border-radius: 5px;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .song:hover {
+    cursor: pointer;
+    transform: scale(1.04);
   }
   
   .song.active {
@@ -150,7 +157,7 @@
   }
   
   .song:active {
-    opacity: 0.8;
+    transform: scale(1.03);
   }
   
   .song.active .option,
